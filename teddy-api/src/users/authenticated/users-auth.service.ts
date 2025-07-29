@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
@@ -11,87 +15,70 @@ export class UsersAuthService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  async findAllUsers(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.find();
-    return users.map((user) => {
-      const { password, ...userResponse } = user;
-      return userResponse as UserResponseDto;
-    });
-  }
-
-  async findDeletedUsers(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.find({
-      withDeleted: true,
-      where: { deletedAt: { not: null } } as any,
-    });
-    return users.map((user) => {
-      const { password, ...userResponse } = user;
-      return userResponse as UserResponseDto;
-    });
-  }
-
   async findOneUser(id: number): Promise<UserResponseDto> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-    });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
 
-    if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      if (!user) {
+        throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      }
+
+      const { password, ...userResponse } = user;
+      return userResponse as UserResponseDto;
+    } catch (error) {
+      throw error;
     }
-
-    const { password, ...userResponse } = user;
-    return userResponse as UserResponseDto;
   }
 
   async updateUser(
     id: number,
-    updateUserDto: UpdateUserDto
+    updateUserDto: UpdateUserDto,
+    requestUserId: number
   ): Promise<UserResponseDto> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-    });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
 
-    if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      if (user.id !== requestUserId) {
+        throw new UnauthorizedException('Acesso negado');
+      }
+
+      if (!user) {
+        throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      }
+
+      await this.userRepository.update(id, updateUserDto);
+      const updatedUser = await this.userRepository.findOne({
+        where: { id },
+      });
+
+      const { password, ...userResponse } = updatedUser;
+      return userResponse as UserResponseDto;
+    } catch (error) {
+      throw error;
     }
-
-    await this.userRepository.update(id, updateUserDto);
-    const updatedUser = await this.userRepository.findOne({
-      where: { id },
-    });
-
-    const { password, ...userResponse } = updatedUser;
-    return userResponse as UserResponseDto;
   }
 
-  async removeUser(id: number): Promise<void> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-    });
+  async removeUser(id: number, requestUserId: number): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
 
-    if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      if (user.id !== requestUserId) {
+        throw new UnauthorizedException('Acesso negado');
+      }
+
+      if (!user) {
+        throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      }
+
+      await this.userRepository.softDelete(id);
+    } catch (error) {
+      throw error;
     }
-
-    await this.userRepository.softDelete(id);
-  }
-
-  async restoreUser(id: number): Promise<UserResponseDto> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      withDeleted: true,
-    });
-
-    if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
-    }
-
-    await this.userRepository.restore(id);
-    const restoredUser = await this.userRepository.findOne({
-      where: { id },
-    });
-
-    const { password, ...userResponse } = restoredUser;
-    return userResponse as UserResponseDto;
   }
 }

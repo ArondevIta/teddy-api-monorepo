@@ -1,15 +1,18 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { User } from '../../entities/user.entity';
 import { CreateUserDto, UserResponseDto } from '../dto/user.dto';
+import { EnvConfig } from '../../config/env.config';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersPublicService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly configService: ConfigService<EnvConfig>
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -22,7 +25,7 @@ export class UsersPublicService {
       throw new ConflictException('Email já está em uso');
     }
 
-    const saltRounds = 10;
+    const saltRounds = this.configService.get('BCRYPT_SALT_ROUNDS');
     const hashedPassword = await bcrypt.hash(
       createUserDto.password,
       saltRounds
