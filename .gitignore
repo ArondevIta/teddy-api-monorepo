@@ -1,0 +1,44 @@
+
+# NX
+.nx/cache
+.nx/workspace-data
+.nx/installation
+
+# Dependencies
+node_modules
+yarn-error.log
+npm-debug.log*
+
+# Build outputs
+dist
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+
+# Temporary files
+tmp
+temp
+
+# Coverage
+coverage
+.nyc_output
+
+# Cursor/GitHub specific
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

@@ -1,0 +1,11 @@
+{
+  "watch": ["teddy-api/src"],
+  "ext": "ts,js,json",
+  "ignore": ["node_modules", "dist", "*.test.ts"],
+  "exec": "npx nx build teddy-api && node dist/teddy-api/main.js",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "legacyWatch": true,
+  "polling": true
+}
