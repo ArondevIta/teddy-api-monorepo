@@ -1,81 +1,133 @@
 # Teddy Monorepo - NestJS API
 
-Um monorepo simples usando NX com uma API NestJS, PostgreSQL, validação de ambiente com Zod e autenticação JWT.
+A simple monorepo using NX with a NestJS API, PostgreSQL, environment validation with Zod and JWT authentication.
 
-## 🚀 Stack Tecnológica
+## 🚀 Tech Stack
 
 - **NX** - Monorepo tooling
-- **NestJS** - Framework Node.js
-- **PostgreSQL** - Banco de dados
-- **TypeORM** - ORM para TypeScript
-- **JWT** - Autenticação com @nestjs/passport
-- **Zod** - Validação de variáveis de ambiente
-- **bcrypt** - Hash de senhas
+- **NestJS** - Node.js framework
+- **PostgreSQL** - Database
+- **TypeORM** - ORM for TypeScript
+- **JWT** - Authentication with @nestjs/passport
+- **Zod** - Environment variables validation
+- **bcrypt** - Password hashing
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 teddy-test/
-├── teddy-api/                 # Aplicação NestJS principal
+├── teddy-api/                 # Main NestJS application
 │   ├── src/
-│   │   ├── app/              # Módulo principal da aplicação
-│   │   ├── auth/             # Módulo de autenticação JWT
-│   │   ├── config/           # Configurações e validação de env
-│   │   ├── entities/         # Entidades do banco de dados
-│   │   └── main.ts           # Entry point da aplicação
-├── teddy-api-e2e/            # Testes end-to-end
-├── .env                      # Variáveis de ambiente
-└── .env.example              # Exemplo de variáveis de ambiente
+│   │   ├── app/              # Main application module
+│   │   ├── auth/             # JWT authentication module
+│   │   ├── config/           # Configuration and env validation
+│   │   ├── entities/         # Database entities
+│   │   └── main.ts           # Application entry point
+├── .env                      # Environment variables
+└── .env.example              # Environment variables example
 ```
 
-## 🛠️ Configuração
+## 🛠️ Setup
 
-### Opção 1: Usando Makefile (Mais Fácil) ⭐
+### Option 1: Using Makefile (Easier) ⭐
 
 ```bash
-# Iniciar aplicação (banco + API)
+# Start application (database + API)
 make run
 
-# Ver logs da aplicação
+# View application logs
 make logs
 
-# Parar todos os serviços
+# Stop all services
 make stop
 
-# Ver todos os comandos disponíveis
+# View all available commands
 make help
 ```
 
-### Opção 2: Usando Docker Compose Diretamente
+### Option 2: Using Docker Compose Directly
 
-#### 1. Executar com Docker Compose
+#### 1. Run with Docker Compose
 
 ```bash
-# Subir banco de dados e aplicação
+# Start database and application
 docker-compose up --build
 ```
 
-Este comando irá:
+This command will:
 
-- Subir o PostgreSQL
-- Aguardar o banco estar saudável
-- Buildar e executar a aplicação NestJS
-- Aplicação estará disponível em http://localhost:3000/api
+- Start PostgreSQL
+- Wait for database to be healthy
+- Build and run the NestJS application
+- Application will be available at http://localhost:3000/api
 
-#### 2. Parar os serviços
+#### 2. Stop services
 
 ```bash
 docker-compose down
 ```
 
-## Recursos Implementados
+## 📚 API Documentation
 
-- ✅ Monorepo NX configurado
-- ✅ Aplicação NestJS com TypeScript
-- ✅ Integração com PostgreSQL via TypeORM
-- ✅ Validação de variáveis de ambiente com Zod
-- ✅ Autenticação JWT com @nestjs/passport
-- ✅ Hash de senhas com bcrypt
-- ✅ Validação de DTOs com class-validator
-- ✅ CORS habilitado
-- ✅ Sincronização automática do banco em desenvolvimento
+The API includes comprehensive Swagger documentation with detailed endpoint descriptions, request/response schemas, and authentication requirements.
+
+**Access the documentation:**
+1. Start the application using one of the methods above
+2. Open your browser and navigate to: **http://localhost:3000/api/docs**
+
+The Swagger UI provides:
+- Interactive API testing
+- Complete endpoint documentation
+- Request/response examples
+- Authentication setup
+- Schema definitions
+
+## Implemented Features
+
+- ✅ NX Monorepo configured
+- ✅ NestJS application with TypeScript
+- ✅ PostgreSQL integration via TypeORM
+- ✅ Environment variables validation with Zod
+- ✅ JWT authentication with @nestjs/passport
+- ✅ Password hashing with bcrypt
+- ✅ DTO validation with class-validator
+- ✅ CORS enabled
+- ✅ Automatic database synchronization in development
+- ✅ Comprehensive Swagger documentation
+- ✅ URL Shortener service with click tracking
+- ✅ Clean architecture with custom decorators
+
+## 🚀 Future Improvements
+
+The following enhancements could be implemented to further improve the application:
+
+### 🧪 Testing
+- **Automated Testing**: Add unit tests, integration tests, and e2e tests
+- **Test Coverage**: Implement code coverage reporting
+- **Testing Framework**: Jest for unit tests, Supertest for API testing
+
+### 📡 Events & Messaging
+- **Event System**: Implement domain events for decoupled architecture
+- **Message Queues**: Add Redis/RabbitMQ for background job processing
+- **Real-time Updates**: WebSocket integration for live notifications
+
+### 👥 User Management
+- **Role-Based Access Control (RBAC)**: Implement user roles (Client, Admin)
+- **Permissions System**: Fine-grained permissions for different operations
+- **Admin Dashboard**: Administrative interface for user management
+- **User Profiles**: Extended user information and preferences
+
+### 🔐 Authentication Providers
+- **AWS Cognito**: Enterprise-grade authentication service
+- **Firebase Auth**: Google's authentication platform
+- **Auth0**: Third-party authentication service
+- **OAuth2/OpenID**: Social login (Google, GitHub, Facebook)
+- **Multi-Factor Authentication (MFA)**: Enhanced security
+
+### 🔄 CI/CD Pipeline
+- **GitHub Actions**: Automated testing and deployment
+- **Docker Registry**: Container image management
+- **Environment Management**: Staging and production deployments
+- **Database Migrations**: Automated schema updates
+- **Health Checks**: Application monitoring and alerting
+- **Code Quality**: ESLint, Prettier, SonarQube integration
