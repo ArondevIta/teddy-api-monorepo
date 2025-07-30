@@ -23,40 +23,44 @@ export class UrlShortenerService {
     originalUrl: string,
     user?: User
   ): Promise<{ shortUrl: string; shortCode: string; originalUrl: string }> {
-    if (!this.isValidUrl(originalUrl)) {
-      throw new ConflictException('Invalid URL format');
-    }
+    try {
+      if (!this.isValidUrl(originalUrl)) {
+        throw new ConflictException('Invalid URL format');
+      }
 
-    const existingUrl = await this.urlRepository.findOne({
-      where: { originalUrl, userId: user?.id ?? null },
-    });
+      const existingUrl = await this.urlRepository.findOne({
+        where: { originalUrl, userId: user?.id ?? null },
+      });
 
-    if (existingUrl) {
+      if (existingUrl) {
+        return {
+          shortUrl: existingUrl.shortUrl,
+          shortCode: existingUrl.shortCode,
+          originalUrl: existingUrl.originalUrl,
+        };
+      }
+
+      const shortCode = await this.generateUniqueShortCode();
+      const baseUrl = this.configService.get('BASE_URL');
+      const shortUrl = `${baseUrl}/${shortCode}`;
+
+      const urlEntity = this.urlRepository.create({
+        originalUrl,
+        shortCode,
+        shortUrl,
+        userId: user?.id ?? null,
+      });
+
+      await this.urlRepository.save(urlEntity);
+
       return {
-        shortUrl: existingUrl.shortUrl,
-        shortCode: existingUrl.shortCode,
-        originalUrl: existingUrl.originalUrl,
+        shortUrl,
+        shortCode,
+        originalUrl,
       };
+    } catch (error) {
+      throw error;
     }
-
-    const shortCode = await this.generateUniqueShortCode();
-    const baseUrl = this.configService.get('BASE_URL');
-    const shortUrl = `${baseUrl}/${shortCode}`;
-
-    const urlEntity = this.urlRepository.create({
-      originalUrl,
-      shortCode,
-      shortUrl,
-      userId: user?.id ?? null,
-    });
-
-    await this.urlRepository.save(urlEntity);
-
-    return {
-      shortUrl,
-      shortCode,
-      originalUrl,
-    };
   }
 
   private async generateUniqueShortCode(): Promise<string> {
@@ -84,24 +88,32 @@ export class UrlShortenerService {
   }
 
   private async shortCodeExists(shortCode: string): Promise<boolean> {
-    const existing = await this.urlRepository.findOne({
-      where: { shortCode },
-    });
-    return !!existing;
+    try {
+      const existing = await this.urlRepository.findOne({
+        where: { shortCode },
+      });
+      return !!existing;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getOriginalUrlAndTrackClick(shortCode: string): Promise<string> {
-    const urlEntity = await this.urlRepository.findOne({
-      where: { shortCode },
-    });
+    try {
+      const urlEntity = await this.urlRepository.findOne({
+        where: { shortCode },
+      });
 
-    if (!urlEntity) {
-      throw new NotFoundException('Short URL not found');
+      if (!urlEntity) {
+        throw new NotFoundException('Short URL not found');
+      }
+
+      await urlEntity.incrementClick(this.dataSource);
+
+      return urlEntity.originalUrl;
+    } catch (error) {
+      throw error;
     }
-
-    await urlEntity.incrementClick(this.dataSource);
-
-    return urlEntity.originalUrl;
   }
 
   private isValidUrl(url: string): boolean {
