@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -13,6 +15,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import {
   ApiUpdateShortenedUrl,
   ApiDeleteShortenedUrl,
+  ApiGetUserUrls,
 } from '../../common/decorators/api-endpoints.decorator';
 
 @ApiTags('URL Shortener - Authenticated')
@@ -22,6 +25,12 @@ import {
 export class UrlShortenerAuthController {
   constructor(private readonly service: UrlShortenerAuthService) {}
 
+  @Get('user-urls')
+  @ApiGetUserUrls()
+  async getUserUrls(@Req() req) {
+    return this.service.findByUserId(req.user.id);
+  }
+
   @Patch(':id')
   @ApiUpdateShortenedUrl()
   async updateUrl(@Param('id') id: number, @Body() urlDto: ShortenUrlDto) {
@@ -30,7 +39,7 @@ export class UrlShortenerAuthController {
 
   @Delete(':id')
   @ApiDeleteShortenedUrl()
-  async deleteUrl(@Param('id') id: number) {
-    return this.service.deleteById(id);
+  async deleteUrl(@Param('id') id: number, @Req() req) {
+    return this.service.deleteById(id, req.user.id);
   }
 }

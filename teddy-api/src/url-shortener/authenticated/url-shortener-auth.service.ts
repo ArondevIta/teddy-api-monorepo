@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -47,7 +48,6 @@ export class UrlShortenerAuthService extends BaseService<Url> {
         throw new ConflictException('Invalid URL format');
       }
 
-      // Atualiza a entidade e salva (retorna a entidade atualizada)
       urlEntity.originalUrl = updateData.url;
       return await this.urlRepository.save(urlEntity);
     } catch (error) {
@@ -55,7 +55,7 @@ export class UrlShortenerAuthService extends BaseService<Url> {
     }
   }
 
-  async deleteById(id: number): Promise<void> {
+  async deleteById(id: number, userId: number): Promise<void> {
     try {
       const urlEntity = await this.urlRepository.findOne({
         where: { id },
@@ -65,7 +65,22 @@ export class UrlShortenerAuthService extends BaseService<Url> {
         throw new NotFoundException('Short URL not found');
       }
 
+      if (urlEntity.userId !== userId) {
+        throw new UnauthorizedException('Acesso negado');
+      }
+
       await this.urlRepository.softDelete(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByUserId(userId: number): Promise<Url[]> {
+    try {
+      const urls = await this.urlRepository.find({
+        where: { user: { id: userId } },
+      });
+      return urls;
     } catch (error) {
       throw error;
     }
