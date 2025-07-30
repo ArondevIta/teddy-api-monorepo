@@ -24,17 +24,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
       NODE_ENV: development
       NODE_OPTIONS: ''
-      PORT: 3000
       DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: teddy_db
-      JWT_SECRET: super-secret-jwt-key-for-teddy-test-minimum-32-chars
-      JWT_EXPIRES_IN: 1d
       CHOKIDAR_USEPOLLING: 'true'
       WATCHPACK_POLLING: 'true'
     ports:
