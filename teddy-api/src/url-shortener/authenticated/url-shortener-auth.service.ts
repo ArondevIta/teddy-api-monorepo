@@ -66,7 +66,7 @@ export class UrlShortenerAuthService extends BaseService<Url> {
       }
 
       if (urlEntity.userId !== userId) {
-        throw new UnauthorizedException('Acesso negado');
+        throw new UnauthorizedException('Access denied');
       }
 
       await this.urlRepository.softDelete(id);

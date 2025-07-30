@@ -25,7 +25,7 @@ export class UsersPublicService extends BaseService<User> {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email já está em uso');
+      throw new ConflictException('Email already in use');
     }
 
     const saltRounds = this.configService.get('BCRYPT_SALT_ROUNDS');

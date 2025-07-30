@@ -25,7 +25,7 @@ export class UsersAuthService extends BaseService<User> {
       });
 
       if (!user) {
-        throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+        throw new NotFoundException(`User with ID ${id} not found`);
       }
 
       const { password, ...userResponse } = user;
@@ -46,11 +46,11 @@ export class UsersAuthService extends BaseService<User> {
       });
 
       if (user.id !== requestUserId) {
-        throw new UnauthorizedException('Acesso negado');
+        throw new UnauthorizedException('Access denied');
       }
 
       if (!user) {
-        throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+        throw new NotFoundException(`User with ID ${id} not found`);
       }
 
       await this.userRepository.update(id, updateUserDto);
@@ -72,11 +72,11 @@ export class UsersAuthService extends BaseService<User> {
       });
 
       if (user.id !== requestUserId) {
-        throw new UnauthorizedException('Acesso negado');
+        throw new UnauthorizedException('Access denied');
       }
 
       if (!user) {
-        throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+        throw new NotFoundException(`User with ID ${id} not found`);
       }
 
       await this.userRepository.softDelete(id);
