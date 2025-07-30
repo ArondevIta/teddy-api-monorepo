@@ -6,18 +6,21 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Url } from '../entities/url.entity';
-import { User } from '../entities/user.entity';
-import { EnvConfig } from '../config/env.config';
+import { Url } from '../../entities/url.entity';
+import { User } from '../../entities/user.entity';
+import { EnvConfig } from '../../config/env.config';
+import { BaseService } from '../../common/base.service';
 
 @Injectable()
-export class UrlShortenerService {
+export class UrlShortenerPublicService extends BaseService<Url> {
   constructor(
     @InjectRepository(Url)
     private urlRepository: Repository<Url>,
     private configService: ConfigService<EnvConfig>,
     private dataSource: DataSource
-  ) {}
+  ) {
+    super(urlRepository);
+  }
 
   async shortenUrl(
     originalUrl: string,
@@ -63,6 +66,24 @@ export class UrlShortenerService {
     }
   }
 
+  async getOriginalUrlAndTrackClick(shortCode: string): Promise<string> {
+    try {
+      const urlEntity = await this.urlRepository.findOne({
+        where: { shortCode },
+      });
+
+      if (!urlEntity) {
+        throw new NotFoundException('Short URL not found');
+      }
+
+      await urlEntity.incrementClick(this.dataSource);
+
+      return urlEntity.originalUrl;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   private async generateUniqueShortCode(): Promise<string> {
     let shortCode: string;
 
@@ -93,24 +114,6 @@ export class UrlShortenerService {
         where: { shortCode },
       });
       return !!existing;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async getOriginalUrlAndTrackClick(shortCode: string): Promise<string> {
-    try {
-      const urlEntity = await this.urlRepository.findOne({
-        where: { shortCode },
-      });
-
-      if (!urlEntity) {
-        throw new NotFoundException('Short URL not found');
-      }
-
-      await urlEntity.incrementClick(this.dataSource);
-
-      return urlEntity.originalUrl;
     } catch (error) {
       throw error;
     }

@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UrlShortenerController } from './url-shortener.controller';
-import { UrlShortenerService } from './url-shortener.service';
+import { UrlShortenerPublicController } from './public/url-shortener-public.controller';
+import { UrlShortenerPublicService } from './public/url-shortener-public.service';
+import { UrlShortenerAuthController } from './authenticated/url-shortener-auth.controller';
+import { UrlShortenerAuthService } from './authenticated/url-shortener-auth.service';
 import { Url } from '../entities/url.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Url])],
-  controllers: [UrlShortenerController],
-  providers: [UrlShortenerService],
-  exports: [UrlShortenerService],
+  controllers: [UrlShortenerPublicController, UrlShortenerAuthController],
+  providers: [UrlShortenerPublicService, UrlShortenerAuthService],
+  exports: [],
 })
 export class UrlShortenerModule {}

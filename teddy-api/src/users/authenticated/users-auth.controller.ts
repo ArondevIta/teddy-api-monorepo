@@ -18,11 +18,11 @@ import { UsersAuthService } from './users-auth.service';
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersAuthController {
-  constructor(private readonly usersAuthService: UsersAuthService) {}
+  constructor(private readonly service: UsersAuthService) {}
 
   @Get('me')
   async getMe(@Req() req): Promise<UserResponseDto> {
-    return this.usersAuthService.findOneUser(req.user.id);
+    return this.service.findOneUser(req.user.id);
   }
 
   @Patch(':id')
@@ -31,7 +31,7 @@ export class UsersAuthController {
     @Body() updateUserDto: UpdateUserDto,
     @Req() req
   ): Promise<UserResponseDto> {
-    return this.usersAuthService.updateUser(id, updateUserDto, req.user.id);
+    return this.service.updateUser(id, updateUserDto, req.user.id);
   }
 
   @Delete(':id')
@@ -40,6 +40,6 @@ export class UsersAuthController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req
   ): Promise<void> {
-    return this.usersAuthService.removeUser(id, req.user.id);
+    return this.service.removeUser(id, req.user.id);
   }
 }

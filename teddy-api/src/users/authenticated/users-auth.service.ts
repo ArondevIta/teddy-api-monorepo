@@ -7,13 +7,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
 import { UpdateUserDto, UserResponseDto } from '../dto/user.dto';
+import { BaseService } from '../../common/base.service';
 
 @Injectable()
-export class UsersAuthService {
+export class UsersAuthService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
-  ) {}
+  ) {
+    super(userRepository);
+  }
 
   async findOneUser(id: number): Promise<UserResponseDto> {
     try {
